@@ -15,9 +15,12 @@ async function borrowBook(req, res, next) {
         if(!borrowBook || !borrowBook._id) {
             return res.status(404).send('No record found');
         };
+        
+        if(borrowBook.status.toLowercase() === "unavailable") {
+            return res.send('This book is unavailable.');
+        }
 
         let borrowRecord = await Borrower.findById(req.user.userId);
-
 
         if(borrowRecord.max_books <= 0) {
             return res.send('Limit for borrowed books reached.');
