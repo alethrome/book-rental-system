@@ -38,7 +38,7 @@ async function login(req, res, next) {
     
                 return res.send({ accessToken: token });
             } else {
-                return res.status(400).send('Login failed.');
+                return res.status(400).send('Invalid password or email')
             }
         } else {
             return res.status(400).send('Login failed.')

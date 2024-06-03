@@ -29,7 +29,7 @@ async function getUser(req, res, next) {
     }
 };
 
-async function createUser(req, res, next) {
+async function createUser(req, res) {
     // const session = await mongoose.startSession();
     // session.startTransaction();
 
@@ -63,7 +63,7 @@ async function createUser(req, res, next) {
                 borrower: borrowerRecord
             });
         } else {
-            return res.send('User already exists.');
+            return res.status(200).send('User already exists.');
         };
 
     }

@@ -9,7 +9,7 @@ async function getAllBooks(req, res, next) {
             ]
         });
 
-        return res.json(books);
+        return res.status(200).json(books);
     }
     catch (err) {
         return res.status(400).send(err.message);
@@ -20,11 +20,11 @@ async function getBook(req, res, next) {
     try {
         const book = await Book.findById(req.params.id);
 
-        if (!book) {
+        if (!book || book.deleted_at != null) {
             return res.status(404).send('No record found');
         }
 
-        return res.json(book)
+        return res.status(200).json(book);
     }
     catch (err) {
         res.status(400).send(err.message);
@@ -61,11 +61,17 @@ async function createBook(req, res, next) {
         ...req.body
     });
 
+    const uniqueBook = await Book.findOne({  isbn: newBook.isbn });
+
+    if(uniqueBook) {
+        return res.status(400).send('Book already exists.');
+    }
+
     try {
         const newRecord = await newBook.save();
 
         return res.status(200).json({ 
-            message: 'Book was added succesfully.',
+            message: 'Book was added successfully.',
             book: newRecord
         });
     }
@@ -87,7 +93,7 @@ async function deleteBook(req, res, next) {
             return res.status(400).send('No record found.')
         }
 
-        return res.json(updatedBook);
+        return res.status(200).json(updatedBook);
     }
     catch (err) {
         res.status(400).send(err.message);

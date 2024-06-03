@@ -16,21 +16,23 @@ async function borrowBook(req, res, next) {
             return res.status(404).send('No record found');
         };
         
-        if(borrowBook.status.toLowercase() === "unavailable") {
-            return res.send('This book is unavailable.');
+        if(borrowBook.status.toLowerCase() === "unavailable") {
+            return res.status(400).send('This book is unavailable.');
         }
 
-        let borrowRecord = await Borrower.findById(req.user.userId);
+        let borrowRecord = await Borrower.findOne({ _id: req.user.userId});
+
+        if(!borrowRecord) {
+            return res.status(400).send('No borrower');
+        }
 
         if(borrowRecord.max_books <= 0) {
-            return res.send('Limit for borrowed books reached.');
+            return res.status(400).send('Limit for borrowed books reached.');
         };
 
         if(borrowRecord.borrowed.some(book => book.book_id === req.params.id)) {
-            return res.send('Book is already borrowed.')
+            return res.status(400).send('Book is already borrowed.')
         }
-
-        console.log(borrowRecord);
 
         borrowRecord.max_books -= 1;
 
@@ -41,7 +43,7 @@ async function borrowBook(req, res, next) {
 
         const borrowedBook = await borrowRecord.save();
 
-        res.status(200).json({
+        return res.status(200).json({
             message: 'Successfully borrowed a book',
             borrowed: borrowedBook
         });
@@ -65,15 +67,11 @@ async function returnBook(req, res, next) {
             return res.status(404).send('Book not found.')
         };
 
-        console.log(req.user);
-
         const borrowedBook = await Borrower.findOne({
             borrowed: { 
                 $elemMatch: { book_id: req.params.id }
             }
         });
-
-        console.log(borrowedBook);
 
         if (!borrowedBook) {
             return res.status(404).send('Borrowed book not found.')

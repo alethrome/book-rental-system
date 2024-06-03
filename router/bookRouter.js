@@ -6,7 +6,7 @@ const { borrowBook, returnBook, getBorrower  } = require('../controller/borrow/b
 const { checkAuth  } = require('../middleware/authenticateUser');
 
 
-router.get('/all', getAllBooks);
+router.get('/all', checkAuth, getAllBooks);
 router.get('/:id', checkAuth, getBook);
 router.post('/', checkAuth, createBook);
 router.put('/:id', checkAuth, updateBook);
