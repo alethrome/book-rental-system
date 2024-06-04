@@ -1,5 +1,4 @@
 const Book = require('../../model/Book');
-const moment = require('moment-timezone')
 
 async function getAllBooks(req, res, next) {
     try {
@@ -39,7 +38,7 @@ async function updateBook(req, res, next) {
     try {
         const updatedBook = await Book.findByIdAndUpdate(
             book_id,
-            updateData,
+            { ...updateData, $and: [{ deleted_at: null }] },
             { new: true }
         );
 
@@ -62,7 +61,7 @@ async function createBook(req, res, next) {
         ...req.body
     });
 
-    const uniqueBook = await Book.findOne({  isbn: newBook.isbn });
+    const uniqueBook = await Book.findOne({  isbn: newBook.isbn, deleted_at: null });
 
     if(uniqueBook) {
         return res.status(400).send('Book already exists.');
@@ -94,8 +93,6 @@ async function deleteBook(req, res, next) {
         if(!updatedBook) {
             return res.status(400).send('No record found.')
         }
-
-
 
         return res.status(200).json(updatedBook);
     }
