@@ -46,6 +46,7 @@ const BookSchema = mongoose.Schema(
             transform: function (doc, ret) {
                 ret.createdAt = ret.createdAt ? moment(ret.createdAt).tz('Asia/Manila').format('YYYY-MM-DD HH:mm:ss') : null;
                 ret.updatedAt = ret.updatedAt ? moment(ret.updatedAt).tz('Asia/Manila').format('YYYY-MM-DD HH:mm:ss') : null;
+                ret.deleted_at = ret.updatedAt ? moment(ret.deleted_at).tz('Asia/Manila').format('YYYY-MM-DD HH:mm:ss') : null;
                 return ret;
             }
         }

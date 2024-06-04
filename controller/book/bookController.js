@@ -1,4 +1,5 @@
 const Book = require('../../model/Book');
+const moment = require('moment-timezone')
 
 async function getAllBooks(req, res, next) {
     try {
@@ -82,7 +83,7 @@ async function createBook(req, res, next) {
 };
 
 async function deleteBook(req, res, next) {
-    const deleteData = Date();
+    const deleteData = new Date();
     try {
         const updatedBook = await Book.findByIdAndUpdate(
             req.params.id,
@@ -93,6 +94,8 @@ async function deleteBook(req, res, next) {
         if(!updatedBook) {
             return res.status(400).send('No record found.')
         }
+
+
 
         return res.status(200).json(updatedBook);
     }

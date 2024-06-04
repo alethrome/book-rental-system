@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const { v4: uuidv4 } = require('uuid');
+const moment = require('moment-timezone');
 
 const BorrowedBookSchema = mongoose.Schema(
     {
@@ -18,6 +19,12 @@ const BorrowedBookSchema = mongoose.Schema(
         timestamps: {
             createdAt: 'borrowed_at', 
             updatedAt: false
+        },
+        toJSON: {
+            transform: function (doc, ret) {
+                ret.borrowed_at = ret.borrowed_at ? moment(ret.borrowed_at).tz('Asia/Manila').format('YYYY-MM-DD HH:mm:ss') : null;
+                return ret;
+            }
         }
     }
 );
