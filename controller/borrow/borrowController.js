@@ -22,16 +22,18 @@ async function borrowBook(req, res, next) {
 
         let borrowRecord = await Borrower.findOne({ _id: req.user.userId});
 
-        if(!borrowRecord) {
-            return res.status(400).send('No borrower');
-        }
+        // if(!borrowRecord) {
+        //     return res.status(404).send('No borrower');
+        // }
 
         if(borrowRecord.max_books <= 0) {
             return res.status(400).send('Limit for borrowed books reached.');
         };
 
-        if(borrowRecord.borrowed.some(book => book.book_id === req.params.id)) {
-            return res.status(400).send('Book is already borrowed.')
+        let isBookBorrowed = borrowRecord.borrowed.some(borrowedBook => borrowedBook.book_id === req.params.id);
+
+        if (isBookBorrowed) {
+            return res.status(400).send('Book is already borrowed.');
         }
 
         borrowRecord.max_books -= 1;

@@ -69,14 +69,15 @@ async function createBook(req, res, next) {
 
     try {
         const newRecord = await newBook.save();
-
+        
         return res.status(200).json({ 
             message: 'Book was added successfully.',
             book: newRecord
         });
+        
     }
     catch (err) {
-        res.status(400).send(err.message);
+        return res.status(400).send(err.message);
     };
 };
 
