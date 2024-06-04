@@ -387,7 +387,7 @@ describe('Rental System', function() {
 
                 const req = ({
                     params: { id: '51c4a658-ac98-473c-8817-ce437058b5dc' },
-                    user: { userId: 'a62a4fed-29e1-473e-9514-f7f4f4ddbb40' }
+                    user: { userId: '3f9df84a-89b2-4c27-bd19-67d4af20a78b' }
                 });
         
                 // Stub Book.findByIdAndUpdate to return a mock book
@@ -452,11 +452,37 @@ describe('Rental System', function() {
         });
 
         describe('return book', function() {
+            before(async () => {
+                const req = ({
+                    params: { id: '8b72f6c4-136e-4092-89a3-a1c0d476f1a1' },
+                    user: { userId: '5f5813ff-1fd5-4518-9133-53c80de0f5b3' }
+                });
+        
+                const bookStub = sinon.stub();
+                bookStub.withArgs(req.params.id, { $inc: { item_count: -1 } }, { new: true, runValidators: true })
+
+                const borrowerStub = sinon.stub();
+                borrowerStub.withArgs({_id: req.user.userId});
+
+                res = {
+                    status: sinon.stub().returnsThis(),
+                    send: sinon.stub(),
+                    json: sinon.stub(),
+                };
+        
+                const dependencies = {
+                    Book: { findByIdAndUpdate: bookStub },
+                    Borrower: { findOne: borrowerStub }
+                };
+        
+                await borrowBook(req, res, null, dependencies);
+            })
+
             it('Should successfully return book', async function() {
 
                 const req = ({
                     params: { id: '8b72f6c4-136e-4092-89a3-a1c0d476f1a1' },
-                    user: { userId: 'cd6bfcc5-5eea-471f-966b-d2a791ac6c42' }
+                    user: { userId: '5f5813ff-1fd5-4518-9133-53c80de0f5b3' }
                 });
 
                 const bookStub = sinon.stub();
