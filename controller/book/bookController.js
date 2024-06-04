@@ -36,20 +36,28 @@ async function updateBook(req, res, next) {
     const updateData = req.body;
 
     try {
-        const updatedBook = await Book.findByIdAndUpdate(
-            book_id,
-            { ...updateData, $and: [{ deleted_at: null }] },
-            { new: true }
-        );
+        const book = await Book.findOne({ _id: book_id, deleted_at: null });
 
-        if(!updatedBook) {
-            return res.status(404).send('No record found.')
+        const uniqueBook = await Book.findOne({  isbn: updateData.isbn, deleted_at: null });
+
+        if(uniqueBook) {
+            return res.status(400).send('Book already exists.');
         }
 
-        return res.status(200).json({ 
-            message: "Book successfully updated",
-            updatedBook: updatedBook
-        });
+        if(book) {
+            const updatedBook = await Book.findByIdAndUpdate(
+                { _id: book_id, deleted_at: null },
+                updateData,
+                { new: true }
+            );
+
+            return res.status(200).json({ 
+                message: "Book successfully updated",
+                updatedBook: updatedBook
+            });
+        } else {
+            return res.status(404).send('No record found.')
+        }
     }
     catch (err) {
         res.status(400).send(err.message);
