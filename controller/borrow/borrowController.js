@@ -12,7 +12,7 @@ async function borrowBook(req, res, next) {
             { new: true, runValidators: true }
         );
 
-        if(!borrowBook || !borrowBook._id) {
+        if(!borrowBook || !borrowBook._id || borrowBook.deleted_at != null) {
             return res.status(404).send('No record found');
         };
         
