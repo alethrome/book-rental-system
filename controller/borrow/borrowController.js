@@ -13,10 +13,26 @@ async function borrowBook(req, res, next) {
         );
 
         if(!borrowBook || !borrowBook._id || borrowBook.deleted_at != null) {
+            await Book.findByIdAndUpdate(
+                req.params.id, 
+                {
+                    $inc: { item_count: 1 }
+                },
+                { new: true, runValidators: true }
+            );
+
             return res.status(404).send('No record found');
         };
         
         if(borrowBook.status.toLowerCase() === "unavailable") {
+            await Book.findByIdAndUpdate(
+                req.params.id, 
+                {
+                    $inc: { item_count: 1 }
+                },
+                { new: true, runValidators: true }
+            );
+
             return res.status(400).send('This book is unavailable.');
         }
 
@@ -41,6 +57,14 @@ async function borrowBook(req, res, next) {
         let isBookBorrowed = borrowRecord.borrowed.some(borrowedBook => borrowedBook.book_id === req.params.id);
 
         if (isBookBorrowed) {
+            await Book.findByIdAndUpdate(
+                req.params.id, 
+                {
+                    $inc: { item_count: 1 }
+                },
+                { new: true, runValidators: true }
+            );
+
             return res.status(400).send('Book is already borrowed.');
         }
 
@@ -74,6 +98,14 @@ async function returnBook(req, res, next) {
         );
 
         if(!borrowBook || !borrowBook._id) {
+            await Book.findByIdAndUpdate(
+                req.params.id, 
+                {
+                    $inc: { item_count: -1 }
+                },
+                { new: true, runValidators: true }
+            );
+            
             return res.status(404).send('Book not found.')
         };
 

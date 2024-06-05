@@ -27,7 +27,7 @@ async function getBook(req, res, next) {
         return res.status(200).json(book);
     }
     catch (err) {
-        res.status(400).send(err.message);
+        return res.status(400).send(err.message);
     }
 };
 
@@ -48,7 +48,7 @@ async function updateBook(req, res, next) {
             const updatedBook = await Book.findByIdAndUpdate(
                 { _id: book_id, deleted_at: null },
                 updateData,
-                { new: true }
+                { new: true, runValidators: true }
             );
 
             return res.status(200).json({ 
@@ -60,7 +60,8 @@ async function updateBook(req, res, next) {
         }
     }
     catch (err) {
-        res.status(400).send(err.message);
+        return res.status(400).send(err.message);
+        
     }
 }
 
