@@ -40,7 +40,7 @@ async function updateBook(req, res, next) {
 
         const uniqueBook = await Book.findOne({  isbn: updateData.isbn, deleted_at: null });
 
-        if(uniqueBook) {
+        if(uniqueBook && uniqueBook._id != req.params.id) {
             return res.status(400).send('Book already exists.');
         }
 
@@ -99,10 +99,13 @@ async function deleteBook(req, res, next) {
         );
 
         if(!updatedBook) {
-            return res.status(400).send('No record found.')
+            return res.status(404).send('No record found.')
         }
 
-        return res.status(200).json(updatedBook);
+        return res.status(200).json({
+            message: "Book is successfully deleted",
+            deleted: updatedBook
+        });
     }
     catch (err) {
         res.status(400).send(err.message);

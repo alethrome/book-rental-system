@@ -113,7 +113,16 @@ describe('Rental System', function() {
             it('Should throw 404 error if book is not found', async function() {
 
                 let req = {
-                    params: { id: '123' }
+                    params: { id: 'e9e6e2a6' },
+                    body: {
+                        title: "Percy Jackson and the Battle of Labyrinth",
+                        author: "Rick Rior",
+                        publisher: "publisher",
+                        description: "This is a test update",
+                        isbn: "51555-i23459",
+                        status: "Unavailable",
+                        item_count: "5"
+                    }
                 };
                 
                 res = {
@@ -128,6 +137,35 @@ describe('Rental System', function() {
                 expect(res.status.firstCall.args[0]).to.equal(404);
                 expect(res.send.calledOnce).to.be.true;
                 expect(res.send.firstCall.args[0]).to.equal('No record found.');
+            });
+
+            it('Should throw 400 error if the book already exists', async function() {
+
+                const req = {
+                    params: { id: '75b6b2b9-9b90-4ae0-a3f1-a89e54e52e27'},
+                    body: {
+                        title: "Percy Jackson and the Battle of Labyrinth",
+                        author: "Rick Rior",
+                        publisher: "publisher",
+                        description: "This is a test update",
+                        isbn: "622094",
+                        status: "Unavailable",
+                        item_count: "5"
+                    }
+                };
+
+                res = {
+                    status: sinon.stub().returnsThis(),
+                    send: sinon.stub(),
+                    json: sinon.stub(),
+                };
+
+                await updateBook(req, res); 
+
+                expect(res.status.calledOnce).to.be.true;
+                expect(res.status.firstCall.args[0]).to.equal(400);
+                expect(res.send.calledOnce).to.be.true;
+                expect(res.send.firstCall.args[0]).to.equal('Book already exists.');
             });
         });
 
@@ -147,13 +185,13 @@ describe('Rental System', function() {
                 expect(res.status.calledOnce).to.be.true;
                 expect(res.status.firstCall.args[0]).to.equal(200);
                 expect(res.json.calledOnce).to.be.true;
-                expect(res.json.firstCall.args[0]).to.have.property('deleted_at');
+                expect(res.json.firstCall.args[0]).to.include({ message: 'Book is successfully deleted'});
             });
 
             it('Should throw 404 error if no record to be deleted', async function() {
 
-                let req = {
-                    params: { id: '123' }
+                const req = {
+                    params: { id: 'e9e6e2a6' }
                 };
                 
                 res = {
@@ -162,7 +200,7 @@ describe('Rental System', function() {
                     json: sinon.spy(),
                 };
 
-                await updateBook(req, res); 
+                await deleteBook(req, res); 
 
                 expect(res.status.calledOnce).to.be.true;
                 expect(res.status.firstCall.args[0]).to.equal(404);
