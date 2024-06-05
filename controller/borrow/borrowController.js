@@ -27,6 +27,14 @@ async function borrowBook(req, res, next) {
         // }
 
         if(borrowRecord.max_books <= 0) {
+            await Book.findByIdAndUpdate(
+                req.params.id, 
+                {
+                    $inc: { item_count: 1 }
+                },
+                { new: true, runValidators: true }
+            );
+
             return res.status(400).send('Limit for borrowed books reached.');
         };
 
@@ -76,6 +84,14 @@ async function returnBook(req, res, next) {
         });
 
         if (!borrowedBook) {
+            await Book.findByIdAndUpdate(
+                req.params.id, 
+                {
+                    $inc: { item_count: -1 }
+                },
+                { new: true, runValidators: true }
+            );
+
             return res.status(404).send('Borrowed book not found.')
         };
 
